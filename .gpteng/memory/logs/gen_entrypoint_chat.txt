@@ -1,0 +1,140 @@
+
+2024-06-13T12:42:16.053031
+================================ System Message ================================
+
+You will get information about a codebase that is currently on disk in the current folder.
+The user will ask you to write a script that runs the code in a specific way.
+You will answer with code blocks that include all the necessary terminal commands.
+Do not install globally. Do not use sudo.
+Do not explain the code, just give the commands.
+Do not use placeholders, use example values (like . for a folder argument) if necessary.
+
+
+================================ Human Message =================================
+
+
+        Make a unix script that
+        a) installs dependencies
+        b) runs all necessary parts of the codebase (in parallel if necessary)
+        
+Information about the codebase:
+
+```
+File: Structure
+1 project
+2 google_app_script
+3 appscript.gs
+4 requirements.txt
+5 python_script
+6 main.py
+7 ocr.py
+8 models
+9 __init__.py
+10 image_processor.py
+11 requirements.txt
+
+File: google_app_script/appscript.gs
+1 function doGet(e) {
+2   var image = e.parameter.image;
+3   var pythonScriptUrl = 'https://script.google.com/macros/d/{SCRIPT_ID}/exec';
+4   var options = {
+5     "method": "POST",
+6     "headers": {
+7       "Content-Type": "application/json"
+8     },
+9     "payload": JSON.stringify({ "image": image })
+10   };
+11   UrlFetchApp.fetch(pythonScriptUrl, options);
+12 }
+
+File: python_script/requirements.txt
+1 pytesseract
+2 google-api-python-client
+3 google-auth
+
+File: python_script/main.py
+1 import os
+2 import json
+3 from flask import Flask, request, jsonify
+4 from ocr import process_image
+5 
+6 app = Flask(__name__)
+7 
+8 @app.route('/process_image', methods=['POST'])
+9 def process_image_route():
+10     data = request.get_json()
+11     image = data['image']
+12     text = process_image(image)
+13     return jsonify({'text': text})
+14 
+15 if __name__ == '__main__':
+16     app.run(debug=True)
+
+File: python_script/ocr.py
+1 import pytesseract
+2 from PIL import Image
+3 from io import BytesIO
+4 import base64
+5 
+6 def process_image(image):
+7     # Decode base64 image
+8     image_data = base64.b64decode(image)
+9     image = Image.open(BytesIO(image_data))
+10     
+11     # Perform OCR
+12     text = pytesseract.image_to_string(image)
+13     return text
+
+File: python_script/models/__init__.py
+1 # Empty file
+
+File: python_script/models/image_processor.py
+1 import cv2
+2 import numpy as np
+3 
+4 class ImageProcessor:
+5     def __init__(self):
+6         pass
+7 
+8     def preprocess_image(self, image):
+9         # Preprocess image
+10         image = cv2.imdecode(np.frombuffer(image, np.uint8), cv2.IMREAD_COLOR)
+11         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+12         return gray
+
+File: requirements.txt
+1 Flask
+2 pytesseract
+3 Pillow
+4 opencv-python
+5 numpy
+6 google-api-python-client
+7 google-auth
+
+```
+
+================================== Ai Message ==================================
+
+Here is the Unix script that installs dependencies and runs the necessary parts of the codebase:
+
+```
+#!/bin/bash
+
+# Install dependencies
+pip install -r requirements.txt
+pip install -r python_script/requirements.txt
+
+# Run the Flask app
+cd python_script
+python main.py &
+cd ..
+
+# Run the Google App Script (not possible in a Unix script, as it's a Google Apps Script)
+# You need to deploy the script to Google Apps Script and set up the SCRIPT_ID
+
+# Wait for the Flask app to start
+sleep 2
+
+# You can test the app by sending a POST request to http://localhost:5000/process_image
+# with a JSON body containing an "image" key with a base64 encoded image value
+```

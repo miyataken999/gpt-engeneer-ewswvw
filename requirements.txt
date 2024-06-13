@@ -1,0 +1,7 @@
+Flask
+pytesseract
+Pillow
+opencv-python
+numpy
+google-api-python-client
+google-auth

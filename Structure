@@ -1,0 +1,11 @@
+project
+google_app_script
+appscript.gs
+requirements.txt
+python_script
+main.py
+ocr.py
+models
+__init__.py
+image_processor.py
+requirements.txt
